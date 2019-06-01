@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://code.alibabatech.com/schema/dubbo
+       http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 声明需要暴露的服务接口 -->
+    <dubbo:service interface="com.example.api.service.RegisterService"
+                   ref="registerService" timeout="10000" />
+    <!-- 和本地 bean 一样实现服务 -->
+    <bean id="registerService" class="com.example.user.serviceImpl.RegisterServiceImpl" />
+
+    <!-- 声明需要暴露的服务接口 -->
+    <dubbo:service interface="com.example.api.service.LoginService"
+                   ref="loginService" timeout="10000" />
+    <!-- 和本地 bean 一样实现服务 -->
+    <bean id="loginService" class="com.example.user.serviceImpl.LoginServiceImpl" />
+
+</beans>
