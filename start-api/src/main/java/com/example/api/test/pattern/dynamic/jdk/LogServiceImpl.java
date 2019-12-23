@@ -5,4 +5,9 @@ public class LogServiceImpl implements LogService{
     public void log() {
         System.out.println("打印日志");
     }
+
+    @Override
+    public void exit() {
+        System.out.println("日志不打印");
+    }
 }

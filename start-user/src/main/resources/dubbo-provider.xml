@@ -10,12 +10,12 @@
     <dubbo:service interface="com.example.api.service.RegisterService"
                    ref="registerService" timeout="10000" />
     <!-- 和本地 bean 一样实现服务 -->
-    <bean id="registerService" class="com.example.user.serviceImpl.RegisterServiceImpl" />
+    <bean id="registerService" class="com.example.user.impl.RegisterServiceImpl" />
 
     <!-- 声明需要暴露的服务接口 -->
     <dubbo:service interface="com.example.api.service.LoginService"
                    ref="loginService" timeout="10000" />
     <!-- 和本地 bean 一样实现服务 -->
-    <bean id="loginService" class="com.example.user.serviceImpl.LoginServiceImpl" />
+    <bean id="loginService" class="com.example.user.impl.LoginServiceImpl" />
 
 </beans>
