@@ -23,28 +23,25 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public StartUserInfo getUserInfo(int userId) {
-        try {
 
-            /**
-             * 这里存在redis缓存穿透的情况，这个用户的key值不存在，每次请求都直接访问数据库
-             *  使用bitmap来存储已有的userId,每次先判断是否再bitmap里，代替布隆过滤器
-             */
-            boolean isInUser = redisUtil.getBit(WebConstants.IS_IN_USER,userId);
-            if(isInUser){
-                Map<Object,Object> userMap= redisUtil.hmget(WebConstants.USER+":"+userId);
-                if(null != userMap){
-                    StartUserInfo userInfo = new StartUserInfo();
-//                    BeanConvertUtils.mapToObject(userMap,userInfo);
-                    return userInfo;
-                }
+        /**
+         * 这里存在redis缓存穿透的情况，这个用户的key值不存在，每次请求都直接访问数据库
+         *  使用bitmap来存储已有的userId,每次先判断是否再bitmap里，代替布隆过滤器
+         */
+        boolean isInUser = redisUtil.getBit(WebConstants.IS_IN_USER,userId);
+        if(isInUser){
+            Map<Object,Object> userMap= redisUtil.hmget(WebConstants.USER+":"+userId);
+            if(null != userMap){
+                StartUserInfo userInfo = new StartUserInfo();
+                BeanConvertUtils.mapToObject((Map<String,Object>)BeanConvertUtils.mapToMap(userMap),userInfo);
+                return userInfo;
             }else{
 
             }
-            return null;
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        }else{
 
+        }
         return null;
+
     }
 }

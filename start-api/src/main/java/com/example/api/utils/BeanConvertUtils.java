@@ -20,7 +20,7 @@ public class BeanConvertUtils {
         return object;
     }
 
-    public static Object mapToMap(Map<Object,Object> map,Class<?> class1,Class<?> class2){
+    public static Object mapToMap(Map<Object,Object> map){
         Map resultMap = new HashMap();
         map.forEach( (key,value) ->{
             try {
@@ -37,7 +37,6 @@ public class BeanConvertUtils {
         map.put("name","lfl");
         map.put("age",12);
 
-        Map<String,Object> resultmap = (Map<String,Object>)BeanConvertUtils.mapToMap(map,String.class,String.class);
-        System.out.println(1);
+        Map<String,Object> resultmap = (Map<String,Object>)BeanConvertUtils.mapToMap(map);
     }
 }
