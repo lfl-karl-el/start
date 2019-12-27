@@ -3,6 +3,7 @@ package com.example.user.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.example.api.entity.StartUserInfo;
 import com.example.api.entity.common.WebConstants;
+import com.example.api.entity.exception.BaseException;
 import com.example.api.service.UserService;
 import com.example.api.utils.BeanConvertUtils;
 import com.example.api.utils.RedisUtil;
@@ -13,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Map;
 
 @Service(version = "userServiceImpl")
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     @Autowired
     RedisUtil redisUtil;
@@ -22,26 +23,34 @@ public class UserServiceImpl implements UserService{
     private StartUserExtMapper startUserExtMapper;
 
     @Override
-    public StartUserInfo getUserInfo(int userId) {
+    public StartUserInfo getUserInfo(StartUserInfo user) throws Exception {
 
         /**
          * 这里存在redis缓存穿透的情况，这个用户的key值不存在，每次请求都直接访问数据库
          *  使用bitmap来存储已有的userId,每次先判断是否再bitmap里，代替布隆过滤器
          */
-        boolean isInUser = redisUtil.getBit(WebConstants.IS_IN_USER,userId);
-        if(isInUser){
-            Map<Object,Object> userMap= redisUtil.hmget(WebConstants.USER+":"+userId);
-            if(null != userMap){
-                StartUserInfo userInfo = new StartUserInfo();
-                BeanConvertUtils.mapToObject((Map<String,Object>)BeanConvertUtils.mapToMap(userMap),userInfo);
+        boolean isInUser = redisUtil.getBit(WebConstants.IS_IN_USER, Long.parseLong(user.getUserId()));
+        if (isInUser) {
+            StartUserInfo userInfo = new StartUserInfo();
+            Map<Object, Object> userMap = redisUtil.hmget(WebConstants.USER + ":" + user.getUserId());
+            if (null != userMap) {
+                BeanConvertUtils.mapToObject((Map<String, Object>) BeanConvertUtils.mapToMap(userMap), userInfo);
                 return userInfo;
-            }else{
-
+            } else {
+                synchronized (user) {
+                    Map<Object, Object> userMapTwo = redisUtil.hmget(WebConstants.USER + ":" + user.getUserId());
+                    if (null != userMapTwo) {
+                        BeanConvertUtils.mapToObject((Map<String, Object>) BeanConvertUtils.mapToMap(userMap), userInfo);
+                    } else {
+                        userInfo = startUserExtMapper.getUserInfo(Long.parseLong(user.getUserId()));
+                    }
+                    return userInfo;
+                }
             }
-        }else{
-
+        } else {
+            throw new BaseException(BaseException.Type.ERROR, "请先注册");
         }
-        return null;
 
     }
+
 }
