@@ -1,9 +1,20 @@
 package com.example.api.utils;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.jedis.JedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.exceptions.JedisConnectionException;
+import redis.clients.jedis.exceptions.JedisException;
 
 import java.util.List;
 import java.util.Map;
@@ -16,8 +27,51 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedisUtil{
 
+    private Logger logger = LoggerFactory.getLogger(RedisUtil.class);
+
     @Autowired
     private RedisTemplate<String,Object> redisTemplate;
+
+    @Autowired
+    private JedisPool jedisPool;
+
+    /**
+     * 有返回结果的回调接口定义。
+     */
+    public interface JedisAction<T> {
+        T action(Jedis jedis);
+    }
+
+    /**
+     * 无返回结果的回调接口定义。
+     */
+    public interface JedisActionNoResult {
+        void action(Jedis jedis);
+    }
+
+    /**
+     * 执行有返回结果的action。
+     */
+    public <T> T execute(JedisAction<T> jedisAction) throws JedisException {
+        try {
+            Jedis jedis = jedisPool.getResource();
+            return jedisAction.action(jedis);
+        } catch (JedisConnectionException e) {
+            throw e;
+        }
+    }
+
+    /**
+     * 执行无返回结果的action。
+     */
+    public void execute(JedisActionNoResult jedisAction) throws JedisException {
+        try {
+            Jedis jedis = jedisPool.getResource();
+            jedisAction.action(jedis);
+        } catch (JedisConnectionException e) {
+            throw e;
+        }
+    }
 
     /**
      * 指定缓存失效的时间
@@ -103,6 +157,26 @@ public class RedisUtil{
             e.printStackTrace();
             return false;
         }
+    }
+
+    public boolean setnx(String key,String value,long time){
+        return execute(new JedisAction<Boolean>() {
+            @Override
+            public Boolean action(Jedis jedis) {
+               String result = jedis.set(key,value,"nx" ,"ex" ,time);
+               return StringUtils.equals("OK",result) ? true : false;
+            }
+        });
+    }
+
+    public boolean setnx(String key,String value){
+        return execute(new JedisAction<Boolean>() {
+            @Override
+            public Boolean action(Jedis jedis) {
+                Long result = jedis.setnx(key,value );
+                return 1 == result ? true : false;
+            }
+        });
     }
 
     /**
