@@ -3,9 +3,9 @@
 <mapper namespace="com.example.user.dao.ext.StartUserExtMapper" >
 
     <select id="getUserInfo" parameterType="java.lang.Long" resultType="com.example.api.entity.StartUserInfo">
-            select t.id userId,t.name name,f.user_fee userFee
-            from t_user t inner join start_user_ fee_info f on t.id = f.user_id
-            where t.id = #{userId}
+            select t.user_id userId,t.user_name name,f.user_fee userFee
+            from t_user t inner join start_user_fee_info f on t.user_id = f.user_id
+            where t.user_id = #{userId}
     </select>
 
 </mapper>

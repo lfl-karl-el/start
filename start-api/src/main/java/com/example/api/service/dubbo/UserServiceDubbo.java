@@ -1,8 +1,8 @@
-package com.example.api.service;
+package com.example.api.service.dubbo;
 
 import com.example.api.entity.StartUserInfo;
 
-public interface UserService {
+public interface UserServiceDubbo {
     
     /**
      *  返回用户的信息

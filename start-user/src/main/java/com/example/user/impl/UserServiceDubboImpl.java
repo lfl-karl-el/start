@@ -4,17 +4,16 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.example.api.entity.StartUserInfo;
 import com.example.api.entity.common.WebConstants;
 import com.example.api.entity.exception.BaseException;
-import com.example.api.service.UserService;
+import com.example.api.service.dubbo.UserServiceDubbo;
 import com.example.api.utils.BeanConvertUtils;
 import com.example.api.utils.RedisUtil;
 import com.example.user.dao.ext.StartUserExtMapper;
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
-@Service(version = "userServiceImpl")
-public class UserServiceImpl implements UserService {
+@Service
+public class UserServiceDubboImpl implements UserServiceDubbo {
 
     @Autowired
     RedisUtil redisUtil;
@@ -33,13 +32,13 @@ public class UserServiceImpl implements UserService {
         if (isInUser) {
             StartUserInfo userInfo = new StartUserInfo();
             Map<Object, Object> userMap = redisUtil.hmget(WebConstants.USER + ":" + user.getUserId());
-            if (null != userMap) {
+            if (!userMap.isEmpty()) {
                 BeanConvertUtils.mapToObject((Map<String, Object>) BeanConvertUtils.mapToMap(userMap), userInfo);
                 return userInfo;
             } else {
                 synchronized (user) {
                     Map<Object, Object> userMapTwo = redisUtil.hmget(WebConstants.USER + ":" + user.getUserId());
-                    if (null != userMapTwo) {
+                    if (!userMapTwo.isEmpty()) {
                         BeanConvertUtils.mapToObject((Map<String, Object>) BeanConvertUtils.mapToMap(userMap), userInfo);
                     } else {
                         userInfo = startUserExtMapper.getUserInfo(Long.parseLong(user.getUserId()));
@@ -48,7 +47,7 @@ public class UserServiceImpl implements UserService {
                 }
             }
         } else {
-            throw new BaseException(BaseException.Type.ERROR, "请先注册");
+            throw new BaseException(BaseException.Type.ERROR, "请先前往注册");
         }
 
     }

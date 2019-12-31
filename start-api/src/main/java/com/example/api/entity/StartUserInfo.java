@@ -2,8 +2,10 @@ package com.example.api.entity;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class StartUserInfo {
+public class StartUserInfo implements Serializable{
     /**
      * 用户id
      */
