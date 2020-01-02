@@ -11,8 +11,9 @@ import com.example.user.dao.ext.StartUserExtMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-@Service
+@Service(timeout = 15000)
 public class UserServiceDubboImpl implements UserServiceDubbo {
 
     @Autowired
@@ -36,15 +37,13 @@ public class UserServiceDubboImpl implements UserServiceDubbo {
                 BeanConvertUtils.mapToObject((Map<String, Object>) BeanConvertUtils.mapToMap(userMap), userInfo);
                 return userInfo;
             } else {
-                synchronized (user) {
-                    Map<Object, Object> userMapTwo = redisUtil.hmget(WebConstants.USER + ":" + user.getUserId());
-                    if (!userMapTwo.isEmpty()) {
-                        BeanConvertUtils.mapToObject((Map<String, Object>) BeanConvertUtils.mapToMap(userMap), userInfo);
-                    } else {
-                        userInfo = startUserExtMapper.getUserInfo(Long.parseLong(user.getUserId()));
-                    }
-                    return userInfo;
+                Map<Object, Object> userMapTwo = redisUtil.hmget(WebConstants.USER + ":" + user.getUserId());
+                if (!userMapTwo.isEmpty()) {
+                    BeanConvertUtils.mapToObject((Map<String, Object>) BeanConvertUtils.mapToMap(userMap), userInfo);
+                } else {
+                    userInfo = startUserExtMapper.getUserInfo(Long.parseLong(user.getUserId()));
                 }
+                return userInfo;
             }
         } else {
             throw new BaseException(BaseException.Type.ERROR, "请先前往注册");

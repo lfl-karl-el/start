@@ -20,4 +20,5 @@ public class StartUserInfo implements Serializable{
      * 用户金额
      */
     private String userFee;
+
 }

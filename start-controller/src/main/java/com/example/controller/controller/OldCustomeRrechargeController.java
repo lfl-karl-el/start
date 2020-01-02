@@ -5,6 +5,7 @@ import com.example.api.entity.StartUserInfo;
 import com.example.api.entity.common.AjaxResult;
 import com.example.api.entity.exception.BaseException;
 import com.example.api.service.dubbo.UserServiceDubbo;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,10 +38,13 @@ public class OldCustomeRrechargeController {
             String userId = request.getParameter("userId");
             StartUserInfo user = new StartUserInfo();
             user.setUserId(userId);
+
             user = userServiceDubbo.getUserInfo(user);
+
             logger.info("-----------------账户"+user.getName()+"余额："+user.getUserFee());
 
         }catch (Exception e){
+            e.printStackTrace();
             throw new BaseException(BaseException.Type.ERROR,e.getMessage());
         }
 
