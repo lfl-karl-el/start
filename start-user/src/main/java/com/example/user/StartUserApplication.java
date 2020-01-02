@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication
 @ComponentScan("com.example")
-@ImportResource(value = {"classpath:dubbo-provider.xml"})
+//@ImportResource(value = {"classpath:dubbo-provider.xml"})
 public class StartUserApplication extends SpringBootServletInitializer {
 
 	@Override
