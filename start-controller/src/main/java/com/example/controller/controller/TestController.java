@@ -1,5 +1,8 @@
 package com.example.controller.controller;
 
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.example.api.entity.StartUserInfo;
+import com.example.api.service.dubbo.UserServiceDubbo;
 import com.example.api.utils.RedisUtil;
 import com.example.controller.anotation.NoRepeatSubmit;
 import org.slf4j.Logger;
@@ -15,15 +18,16 @@ public class TestController {
 
     private Logger logger = LoggerFactory.getLogger(TestController.class);
 
-    @Autowired
-    private RedisUtil redisUtil;
+    @Reference
+    private UserServiceDubbo userServiceDubbo;
 
     @NoRepeatSubmit
     @RequestMapping("test")
-    public Object test(){
+    public Object test() {
+        String userId = "1";
         try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
+            userServiceDubbo.getUserInfo(userId);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "enen";

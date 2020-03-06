@@ -19,7 +19,6 @@ public class OrderServiceDubboImpl implements OrderServiceDubbo {
     @Override
     public AjaxResult oldCustomeRrecharge(StartUserInfo startUserInfo) throws Exception {
         AjaxResult ajaxResult = new AjaxResult();
-        startUserInfo = userServiceDubbo.getUserInfo(startUserInfo);
 
         return null;
     }

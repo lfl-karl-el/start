@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
 * 老用户充值，低于50赠送20元，只有一次机会
@@ -29,19 +32,15 @@ public class OldCustomeRrechargeController {
     @Reference
     private UserServiceDubbo userServiceDubbo;
 
+    static Lock lock = new ReentrantLock();
     /**
      * 用户一进入直接判断充值，提示
      */
     @RequestMapping("index")
     public AjaxResult index(HttpServletRequest request){
+
         try {
             String userId = request.getParameter("userId");
-            StartUserInfo user = new StartUserInfo();
-            user.setUserId(userId);
-
-            user = userServiceDubbo.getUserInfo(user);
-
-            logger.info("-----------------账户"+user.getName()+"余额："+user.getUserFee());
 
         }catch (Exception e){
             e.printStackTrace();

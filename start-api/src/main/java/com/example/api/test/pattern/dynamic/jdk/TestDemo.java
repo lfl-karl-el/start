@@ -6,7 +6,7 @@ public class TestDemo {
         //System.getProperties().put("sun.misc.ProxyGenerator.saveGeneratedFiles", "true");
 
         LogProxyServiceImpl logProxyService = new LogProxyServiceImpl();
-        LogService logService = (LogService)logProxyService.newInstans(new LogTimeServiceImpl());
+        LogService logService = (LogService)logProxyService.newInstans(new LogServiceImpl());
 
 
 

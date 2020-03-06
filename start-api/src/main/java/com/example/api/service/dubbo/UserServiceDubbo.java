@@ -12,5 +12,5 @@ public interface UserServiceDubbo {
      * @return com.example.api.entity.StartUserInfo
      * @throws Exception
      */ 
-    StartUserInfo getUserInfo(StartUserInfo user) throws Exception;
+    StartUserInfo getUserInfo(String userId) throws Exception;
 }
